@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Dockerfile" />
     <Compile Include="MyNewService.cs">
       <SubType>Component</SubType>
     </Compile>

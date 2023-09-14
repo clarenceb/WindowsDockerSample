@@ -28,6 +28,7 @@ namespace MyNewService
                 };
                 ServiceBase.Run(ServicesToRun);
             }
+
         }
     }
 }

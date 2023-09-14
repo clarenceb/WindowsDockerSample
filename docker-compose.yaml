@@ -1,0 +1,15 @@
+services:
+  mynewservice:
+    image: mynewservice:v1.0
+    volumes:
+      - ./uploads:c:/uploads
+
+  webuploader:
+    image: webuploaderapp:v1.0
+    volumes:
+      - ./uploads:c:/uploads
+    ports:
+     - 8080:80
+
+#volumes:
+#  uploads:
