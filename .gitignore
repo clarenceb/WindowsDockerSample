@@ -1,0 +1,15 @@
+[Bb]in/
+[Oo]bj/
+.vs/
+*.bak
+*.ncb
+*.log 
+*.DS_Store
+*.user
+*.suo
+*.pdb
+*.pch
+*.[Cc]ache
+[Tt]humbs.db 
+_ReSharper.*
+*.resharper
