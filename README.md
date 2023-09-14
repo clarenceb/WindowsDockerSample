@@ -87,3 +87,4 @@ Resources
 * https://learn.microsoft.com/en-us/dotnet/framework/windows-services/walkthrough-creating-a-windows-service-application-in-the-component-designer
 * https://learn.microsoft.com/en-us/dotnet/framework/windows-services/service-application-programming-architecture
 * https://learn.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher?view=netframework-4.8.1
+* https://github.com/mihaitibrea/docker-windows-service/tree/master
