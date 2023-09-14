@@ -1,0 +1,11 @@
+{
+  "Filename": "payload2.json",
+  "Body":{
+    "name": "Jane Doe",
+    "age": 25,
+    "city": "California",
+    "state": "CA",
+    "zip": "90001",
+    "country": "USA"
+  }
+}

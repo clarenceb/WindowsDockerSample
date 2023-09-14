@@ -5,10 +5,15 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69F09923-A3BA-4D0E-94AD-87AE56569CF1}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		payload1.json = payload1.json
+		payload2.json = payload2.json
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyNewService", "MyNewService\MyNewService.csproj", "{9BEA8903-87C2-493C-97C3-859F2E2DB253}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUploaderApp", "WebUploaderApp\WebUploaderApp.csproj", "{38644CFE-D9C2-43A7-A469-ACB4A224F07A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,12 +25,17 @@ Global
 		{9BEA8903-87C2-493C-97C3-859F2E2DB253}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9BEA8903-87C2-493C-97C3-859F2E2DB253}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9BEA8903-87C2-493C-97C3-859F2E2DB253}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38644CFE-D9C2-43A7-A469-ACB4A224F07A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38644CFE-D9C2-43A7-A469-ACB4A224F07A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38644CFE-D9C2-43A7-A469-ACB4A224F07A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38644CFE-D9C2-43A7-A469-ACB4A224F07A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9BEA8903-87C2-493C-97C3-859F2E2DB253} = {69F09923-A3BA-4D0E-94AD-87AE56569CF1}
+		{38644CFE-D9C2-43A7-A469-ACB4A224F07A} = {69F09923-A3BA-4D0E-94AD-87AE56569CF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A86EF0C-0240-4EE1-94F2-7BC49E90F934}

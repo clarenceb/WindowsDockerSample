@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9BEA8903-87C2-493C-97C3-859F2E2DB253}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>MyNewService</RootNamespace>
     <AssemblyName>MyNewService</AssemblyName>
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
