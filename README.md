@@ -13,6 +13,10 @@ B-- Save --> C(Host Volume or Bind mount)
 D[Windows Service] -- File Watcher --> C
 ```
 
+Apps built with .NET Framework 4.8.1 on Visual Studio 2022.
+
+To run Dockerized versions locally, you'll need a Docker environment like Docker Desktop and internet access to `mcr.microsoft.com` to pull the base container images (these are quite large, several GB in size).
+
 MyNewService - Windows Service (.NET Framework)
 -----------------------------------------------
 
