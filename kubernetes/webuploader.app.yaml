@@ -1,0 +1,65 @@
+# Create a deployment, service, and ingress for WebUploader on a Windows node pool for WebUploaderApp
+# It should mount a Azure Files PVC to C:\uploads
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webuploader
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webuploader
+  template:
+    metadata:
+      labels:
+        app: webuploader
+      name: webuploader
+    spec:
+      containers:
+      - name: webuploader
+        image: winappacr7374.azurecr.io/webuploaderapp:v1.0
+        volumeMounts:
+        - name: uploads
+          mountPath: C:\uploads
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
+      nodeSelector:
+        "kubernetes.io/os": windows
+      volumes:
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: docs-afs-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webuploader
+spec:
+  selector:
+    app: webuploader
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+# ---
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   name: webuploader
+#   annotations:
+#     kubernetes.io/ingress.class: nginx
+# spec:
+#   rules:
+#   - host: webuploaderapp.westeurope.cloudapp.azure.com
+#     http:
+#       paths:
+#       - path: /
+#         backend:
+#           serviceName: webuploader
+#           servicePort: 80

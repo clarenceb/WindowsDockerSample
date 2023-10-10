@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: docs-afs-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: docs-afs-sc
+  resources:
+    requests:
+      storage: 1Gi

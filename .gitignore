@@ -15,3 +15,5 @@ _ReSharper.*
 *.resharper
 [Pp]ackages/
 uploads/
+
+*-password.*

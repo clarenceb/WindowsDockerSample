@@ -46,7 +46,7 @@ To test locally:
 * Create the directory `C:\uploads\`
 * Make a HTTP POST request to the API:
 
-```cmd
+```powershell
 curl -i -X POST -H "Content-type: application/json" https://localhost:44334/api/Docs -d @payload1.json
 ```
 
@@ -96,6 +96,139 @@ dir ./uploads
 
 # CTRL+C to stop
 ```
+
+Deploy to Azure Kubernetes Service
+----------------------------------
+
+Create a basic AKS cluster (not for production, just for demo purposes)
+
+```powershell
+$Cluster_Name="winappaks"
+$Resource_Group="winappdemo"
+$Location="australiaeast"
+```
+
+Create the AKS cluster:
+
+```powershell
+az group create --name $Resource_Group --location $Location
+
+$Kubernetes_Latest_Version=(az aks get-versions --location $Location --query "values[?!isPreview].version" --output tsv) -split '\n' | Sort-Object {[Version]$_} -Descending | Select-Object -First 1
+
+if (Test-Path "win-password.txt") {
+    $Win_Password = Get-Content "win-password.txt"
+} else {
+    $Win_Password = [System.Convert]::ToBase64String((1..32|%{Get-Random -Maximum 256}))
+    $Win_Password | Out-File "win-password.txt"
+}
+
+$Win_User="azureuser"
+
+az aks create `
+    --resource-group $Resource_Group `
+    --name $Cluster_Name `
+    --node-count 2 `
+    --enable-addons monitoring `
+    --generate-ssh-keys `
+    --network-plugin azure `
+    --enable-managed-identity `
+    --windows-admin-username $Win_User `
+    --windows-admin-password $Win_Password `
+    --kubernetes-version $Kubernetes_Latest_Version
+
+az aks get-credentials --resource-group $Resource_Group --name $Cluster_Name
+az aks install-cli
+```
+
+Add a Windows node pool to the cluster:
+
+```powershell
+# Add a 4 vCore node pool running Windows Server 2022
+az aks nodepool add `
+    --resource-group $Resource_Group `
+    --cluster-name $Cluster_Name `
+    --os-type Windows `
+    --name npwin `
+    --node-count 1 `
+    --node-vm-size Standard_D4s_v3 `
+    --kubernetes-version $Kubernetes_Latest_Version
+```
+
+Query the cluster nodes:
+
+```powershell
+kubectl get nodes -o wide
+```
+
+Create Azure Container Registry (ACR) for storing container images:
+
+```powershell
+# append random digits to make unique
+$ACR_Name="winappacr$((Get-Random -Minimum 1000 -Maximum 9999).ToString())"  
+az acr create --resource-group $Resource_Group --name $ACR_Name --sku Standard --location $Location
+```
+
+Grant image pull access to ACR from the AKS cluster:
+
+```powershell
+az aks update -n $Cluster_Name -g $Resource_Group --attach-acr $ACR_Name
+```
+
+Build and push the container images to ACR using ACR build tasks for Windows container images:
+
+```powershell
+az acr build --registry $ACR_Name --image mynewservice:v1.0 --file .\MyNewService\Dockerfile .\MyNewService\ --platform windows
+
+az acr build --registry $ACR_Name --image webuploaderapp:v1.0 --file .\WebUploaderApp\Dockerfile .\WebUploaderApp\ --platform windows
+```
+
+Create a namespace for the Windows apps:
+
+```powershell
+kubectl create namespace winapp
+```
+
+Create a custom storage class for Azure Files premium storage:
+
+```powershell
+kubectl apply -f kubernetes/docs-afs.sc.yaml
+```
+
+Create the Azure Files PVC:
+
+```powershell
+kubectl apply -f kubernetes\docs-pvc.yaml --namespace winapp
+```
+
+Deploy the Windows Service to the cluster:
+
+```powershell
+# Update the image reference to point to your ACR name
+kubectl apply -f kubernetes\mynewservice.app.yaml --namespace winapp
+
+$MyNewService_Pod_Name=(kubectl get pods -n winapp -l app=mynewservice -o jsonpath='{.items[0].metadata.name}')
+
+kubectl logs $MyNewService_Pod_Name -n winapp -f
+```
+
+Deploy the ASP.NET Web API to the cluster:
+
+```powershell
+# Update the image reference to point to your ACR name
+kubectl apply -f kubernetes\webuploader.app.yaml --namespace winapp
+
+$WebUploader_Pod_Name=(kubectl get pods -n winapp -l app=webuploader -o jsonpath='{.items[0].metadata.name}')
+
+kubectl logs $WebUploader_Pod_Name -n winapp -f
+
+curl -i -X POST -H "Content-type: application/json" http://localhost:8080/api/Docs -d @payload1.json
+
+curl -i -X POST -H "Content-type: application/json" http://localhost:8080/api/Docs -d @payload2.json
+```
+
+Check the logs for MyNewService.
+
+You can also browse the files in the Azure Files storage account in The Azure Portal - look for the Managed Resource group for AKS, unless you used static provisioning of the Azure Files storage account.
 
 Resources / Credits
 -------------------

@@ -1,0 +1,29 @@
+# Send Payload 1 to the Web API (running locally)
+POST https://localhost:44334/api/Docs HTTP/1.1
+content-type: application/json
+
+< ./payload1.json
+
+###
+
+# Send Payload 2 to the Web API (running locally)
+POST https://localhost:44334/api/Docs HTTP/1.1
+content-type: application/json
+
+< ./payload2.json
+
+###
+
+# Send Payload 1 to the Web API (running in Docker)
+POST https://localhost:8080/api/Docs HTTP/1.1
+content-type: application/json
+
+< ./payload1.json
+
+###
+
+# Send Payload 2 to the Web API (running in Docker)
+POST https://localhost:8080/api/Docs HTTP/1.1
+content-type: application/json
+
+< ./payload2.json

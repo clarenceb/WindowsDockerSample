@@ -1,0 +1,37 @@
+# Create a deployment for MyNewService on a Windows node pool
+# It should mount a Azure Files PVC to C:\uploads
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mynewservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mynewservice
+  template:
+    metadata:
+      labels:
+        app: mynewservice
+      name: mynewservice
+    spec:
+      containers:
+      - name: mynewservice
+        image: winappacr7374.azurecr.io/mynewservice:v1.0
+        volumeMounts:
+        - name: uploads
+          mountPath: C:\uploads
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 1
+            memory: 1Gi
+      nodeSelector:
+        "kubernetes.io/os": windows
+      volumes:
+      - name: uploads
+        persistentVolumeClaim:
+          claimName: docs-afs-pvc

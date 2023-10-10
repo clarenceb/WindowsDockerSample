@@ -1,0 +1,19 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: docs-afs-sc
+provisioner: file.csi.azure.com
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+mountOptions:
+ - dir_mode=0777
+ - file_mode=0777
+ - uid=0
+ - gid=0
+ - mfsymlinks
+ - cache=strict
+ - actimeo=30
+ - nosharesock
+parameters:
+  skuName: Premium_ZRS
