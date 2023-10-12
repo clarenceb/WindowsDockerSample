@@ -105,6 +105,8 @@ Create a basic AKS cluster (not for production, just for demo purposes)
 ```powershell
 $Cluster_Name="winappaks"
 $Resource_Group="winappdemo"
+
+# Adjust to a region near you
 $Location="australiaeast"
 ```
 
@@ -221,6 +223,8 @@ $WebUploader_Pod_Name=(kubectl get pods -n winapp -l app=webuploader -o jsonpath
 
 kubectl logs $WebUploader_Pod_Name -n winapp -f
 
+kubectl port-forward svc/webuploader 8080:80 -n winapp
+
 curl -i -X POST -H "Content-type: application/json" http://localhost:8080/api/Docs -d @payload1.json
 
 curl -i -X POST -H "Content-type: application/json" http://localhost:8080/api/Docs -d @payload2.json
@@ -230,6 +234,72 @@ Check the logs for MyNewService.
 
 You can also browse the files in the Azure Files storage account in The Azure Portal - look for the Managed Resource group for AKS, unless you used static provisioning of the Azure Files storage account.
 
+(Optional) Setup Ingress Controller
+-----------------------------------
+
+```powershell
+$Namespace=ingress-basic
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+
+helm install ingress-nginx ingress-nginx/ingress-nginx `
+  --create-namespace `
+  --namespace $Namespace `
+  --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+
+$Ingress_IP=(kubectl get services -n $Namespace ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+# Name to associate with public IP address
+$DNS_Label="webuploader$((Get-Random -Minimum 1000 -Maximum 9999).ToString())"
+echo $DNS_Label
+
+# Get the resource-id of the public IP
+$Public_IP_Res_Id=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '$Ingress_IP')].[id]" --output tsv)
+
+# Update public IP address with DNS name
+az network public-ip update --ids $Public_IP_Res_Id --dns-name $DNS_Label
+
+# Display the FQDN
+az network public-ip show --ids $Public_IP_Res_Id --query "[dnsSettings.fqdn]" --output tsv
+
+# e.g. webuploaderXXXXXX.australiaeast.cloudapp.azure.com
+
+kubectl apply -f .\kubernetes\webuploader.ingress.yaml -n winapp
+```
+
+Access the Web API using: `https://webuploaderXXXXXX.australiaeast.cloudapp.azure.com/api/Docs`
+
+(Optional) Configure TLS on Ingress Controller with Let's Encrypt
+-----------------------------------------------------------------
+
+```powershell
+# TODO: refer to https://learn.microsoft.com/en-us/azure/aks/ingress-tls
+```
+
+Monitoring and Logs
+-------------------
+
+* View Logs and try these container log queries:
+
+```kql
+ContainerLog
+| where LogEntry contains "MyNewService - "
+| where LogEntry contains "Message"
+```
+
+```kql
+ContainerLog
+| where LogEntry contains "MyNewService - "
+| where LogEntry contains "Message"
+| where LogEntry !contains "Monitoring"
+| parse LogEntry with * "MyNewService - " updateType ": " filePath
+| summarize Count=count() by updateType
+```
+
+* View as a Table.
+* View as a Chart.
+
 Resources / Credits
 -------------------
 
@@ -237,3 +307,4 @@ Resources / Credits
 * https://learn.microsoft.com/en-us/dotnet/framework/windows-services/service-application-programming-architecture
 * https://learn.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher?view=netframework-4.8.1
 * https://github.com/mihaitibrea/docker-windows-service/tree/master - Example to run a Windows Service in a Docker container
+* https://learn.microsoft.com/en-us/azure/aks/ingress-tls - AKS Ingress with TLS

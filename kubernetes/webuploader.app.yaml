@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: webuploader
-        image: winappacr7374.azurecr.io/webuploaderapp:v1.0
+        image: <your-acr-name>.azurecr.io/webuploaderapp:v1.0
         volumeMounts:
         - name: uploads
           mountPath: C:\uploads
@@ -47,19 +47,4 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
-# ---
-# apiVersion: extensions/v1beta1
-# kind: Ingress
-# metadata:
-#   name: webuploader
-#   annotations:
-#     kubernetes.io/ingress.class: nginx
-# spec:
-#   rules:
-#   - host: webuploaderapp.westeurope.cloudapp.azure.com
-#     http:
-#       paths:
-#       - path: /
-#         backend:
-#           serviceName: webuploader
-#           servicePort: 80
+
