@@ -5,6 +5,7 @@ Sample Windows apps running in Docker containers consisting of:
 
 - ASP.NET Framework Web API to persist JSON files to a host volume
 - .NET Framework Windows Service to watch a host volume for new files
+- Includes Docker Compose and Kubernetes manifests
 
 ```mermaid
 graph LR
@@ -280,7 +281,8 @@ Access the Web API using: `https://webuploaderXXXXXX.australiaeast.cloudapp.azur
 Monitoring and Logs
 -------------------
 
-* View Logs and try these container log queries:
+* In the Azure Portal, open the AKS resource blade
+* On the left nav menu, select Monitoring / **Logs** and try these container log queries:
 
 ```kql
 ContainerLog
